@@ -3,7 +3,7 @@
 ## Introduction
 These are some sample [pt-online-schema-change](https://www.percona.com/doc/percona-toolkit/2.2/pt-online-schema-change.html) plugins based off of the ones we use at Yelp when running pt-online-schema-change. Also included is a sample pt-online-schema-change.cnf, which you can deploy in /etc/percona-toolkit alongside the plugin.
 
-To learn more about how Yelp uses pt-online-schema-change, you can check out [My talk at Percona Live 2016](https://www.percona.com/live/data-performance-conference-2016/sessions/let-robots-manage-your-schema-without-destroying-all-humans), a link to the slides is at the bottom of the page.
+To learn more about how Yelp uses pt-online-schema-change, you can check out [my talk at Percona Live 2016](https://www.percona.com/live/data-performance-conference-2016/sessions/let-robots-manage-your-schema-without-destroying-all-humans), a link to the slides is at the bottom of the page.
 
 ## The Plugins
 
