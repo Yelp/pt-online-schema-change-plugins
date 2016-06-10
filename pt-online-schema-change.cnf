@@ -1,11 +1,10 @@
 # pt-online-schema-change.cnf: config file for running pt-online-schema-change
 # see https://www.percona.com/doc/percona-toolkit/2.2/configuration_files.html
 # for the documentation on these files
-chunk-time=0.5 
-critical-load=Threads_running=175
-max-lag=4 
-no-check-replication-filters   
-no-drop-old-table 
+chunk-time=0.5
+critical-load=Threads_running=60
+max-lag=4
+no-check-replication-filters
 set-vars=lock_wait_timeout=5
 statistics
 
