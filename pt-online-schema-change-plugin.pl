@@ -13,9 +13,12 @@ sub init {
 
     my $dbh = $self->{aux_cxn}->dbh;
     my @dbname = $dbh->selectrow_array("SELECT DATABASE()") ;
+    my $hipchat_token = $ENV{'HIPCHAT_TOKEN'} ;
+    my $alter_stmt = $self->{alter} ;
 
     if ( $self->{execute} ) {
-        `nodebot dba "pt-online-schema-change starting alter in $dbname[0]: $self->{alter}"` ;
+        `curl -d "room_id=DB&from=pt-OSC-plugin&message=pt-online-schema-change+starting+alter+on+$dbh\n$alter_stmt&color=purple" https://api.hipchat.com/v1/rooms/message?auth_token=$hipchat_token&format=json`
+        `curl -d "room_id=Announcements&from=pt-OSC-plugin&message=pt-online-schema-change+starting+alter+on+$dbh\n$alter_stmt&color=purple" https://api.hipchat.com/v1/rooms/message?auth_token=$hipchat_token&format=json`
     }
 }
 
@@ -26,42 +29,9 @@ sub before_exit {
     my @dbname = $dbh->selectrow_array("SELECT DATABASE()") ;
 
     if ( $self->{execute} ) {
-        `nodebot dba "pt-online-schema-change finishing alter in $dbname[0]: $self->{alter}"` ;
+      `curl -d "room_id=DB&from=pt-OSC-plugin&message=pt-online-schema-change+finishing+alter+on+$dbh\n$alter_stmt&color=purple" https://api.hipchat.com/v1/rooms/message?auth_token=$hipchat_token&format=json`
+      `curl -d "room_id=Announcements&from=pt-OSC-plugin&message=pt-online-schema-change+finishing+alter+on+$dbh\n$alter_stmt&color=purple" https://api.hipchat.com/v1/rooms/message?auth_token=$hipchat_token&format=json`
     }
-}
-
-sub get_slave_lag {
-    my ($self, %args) = @_;
-
-    # oktorun is a reference, also update it using $$oktorun=0;
-    my $oktorun=$args{oktorun};
-
-    # This is a good place to check that you have everything you need
-    # to verify replication across all calls to get_slave_lag. 
-
-    my $lag = sub {
-
-        # this subroutine will be called every time pt-online-schema-change
-        # calls get_slave_lag (which is done by default for each replica 
-        # detected). In our case, we set recurse=0 and get_slave_lag calls a 
-        # central service that gives us the lag amount across the entire 
-        # replication hierarchy. 
-        #
-        # You can do anything you want! For testing purposes here, we'll
-        # just set it to 3.
-        my $current_lag = 3 ; 
-
-        if ($current_lag =~ /^\d+$/) {
-            $$oktorun = 1 ;
-            return $current_lag ;
-        } else {
-            print STDERR "ERROR: Bailling out, failed to get slave lag!\n" ;
-           $$oktorun = 0 ;
-           exit ;
-        }
-
-    } ;
-    return $lag ;
 }
 
 sub before_create_new_table {
